@@ -1,34 +1,71 @@
-import React from "react";
+import React, {useState} from "react";
+import {FaTrashAlt} from 'react-icons/fa'
 
 const Content = () => {
 
-    const handleNameChange = () => {
-        const names = ['Bob', 'Dave', 'Amanda']
-        const int = Math.floor(Math.random() * 3)
-        return names[int]
-      }
+    const [items, setItems] = useState([
+        {
+            id: 1,
+            checked: true,
+            item: "One half pound bag of Coca covered almonds unsalted"
+        },
+        {
+            id: 2,
+            checked: false,
+            item: "Item 2"
+        },
+        {
+           id: 3, 
+           checked: false,
+           item: "Item 3" 
+        }
+    ])
 
-      //click handler
-      const handleClick = () => {
-        console.log('You clicked it')
-      }
-      
-      const handleClick2 = (name) => {
-        console.log(`${name} was clicked `)
-      }
+    const handleCheck = (id) => {
+        const listItems = items.map((item) => item.id === id ? { ...item, checked: !item.checked } : item);
+        setItems(listItems);
+        localStorage.setItem('shoppinglist', JSON.stringify(listItems));
+    }
 
-      const handleClick3 = (event) => {
-        console.log(event.target.innerText)
-      }
+    const handleDelete = (id) => {
+        const listItems = items.filter((item) => item.id !== id);
+        setItems(listItems);
+        localStorage.setItem('shoppinglist', JSON.stringify(listItems));
+    }
+
+
 
     return (
         <main>
-            <p>
-                Hello {handleNameChange()}!
-            </p>
-            <button onClick={handleClick}>Click It</button>
-            <button onClick={() => {handleClick2('Dave')}}>Click It</button>
-            <button onClick={(event) => {handleClick3(event)}}>Click It</button>
+
+            {items.length ? (
+
+                <ul>
+                    {items.map((item) => (
+                        <li className="item" key={item.id}>
+                            <input
+                                type="checkbox"
+                                onChange={() => {handleCheck(item.id)}}
+                                checked={item.checked}
+                            />
+                            <label
+                                style={(item.checked) ? {textDecoration: 'line-through'} : null}
+                                onDoubleClick={() => {handleCheck(item.id)}}
+                            >{item.item}</label>
+                            <FaTrashAlt 
+                                onClick={() => {handleDelete(item.id)}}
+                                role="button" 
+                                tabIndex="0" 
+                            />
+                        </li>
+                    
+                    ))}
+                </ul>
+
+            ) : (
+                <p style={{ marginTop: '2rem'}}>Your list is empty</p>
+            )}
+
         </main>
     )
 }
@@ -36,8 +73,12 @@ const Content = () => {
 export default Content 
 
 
-//click event types 
 
-//button 1 gives tells us we clicked it in the console
-//button 2 tells us dave clicked it and takes in name as an argument 
-//button 3 gives us the event target plus innerText
+//List and Keys
+
+//tip 1: 
+//react needs keys on list items to track changes 
+
+//tip 2
+//npmjs.com to find icons
+//npm i react-icons -D
